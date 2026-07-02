@@ -61,7 +61,14 @@ function SignInForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error && data.session) {
+      await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      });
+      await supabase.auth.getSession();
+    }
     setLoading(false);
     if (error) return toast.error(error.message);
     toast.success("Welcome back");
