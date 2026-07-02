@@ -15,6 +15,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTransferRouteImport } from './routes/_authenticated/transfer'
 import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
 import { Route as AuthenticatedSendRouteImport } from './routes/_authenticated/send'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedLocalTransferRouteImport } from './routes/_authenticated/local-transfer'
+import { Route as AuthenticatedInternationalTransferRouteImport } from './routes/_authenticated/international-transfer'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 
@@ -48,6 +51,23 @@ const AuthenticatedSendRoute = AuthenticatedSendRouteImport.update({
   path: '/send',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLocalTransferRoute =
+  AuthenticatedLocalTransferRouteImport.update({
+    id: '/local-transfer',
+    path: '/local-transfer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInternationalTransferRoute =
+  AuthenticatedInternationalTransferRouteImport.update({
+    id: '/international-transfer',
+    path: '/international-transfer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -64,6 +84,9 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/international-transfer': typeof AuthenticatedInternationalTransferRoute
+  '/local-transfer': typeof AuthenticatedLocalTransferRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/send': typeof AuthenticatedSendRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
   '/transfer': typeof AuthenticatedTransferRoute
@@ -73,6 +96,9 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/international-transfer': typeof AuthenticatedInternationalTransferRoute
+  '/local-transfer': typeof AuthenticatedLocalTransferRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/send': typeof AuthenticatedSendRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
   '/transfer': typeof AuthenticatedTransferRoute
@@ -84,6 +110,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/international-transfer': typeof AuthenticatedInternationalTransferRoute
+  '/_authenticated/local-transfer': typeof AuthenticatedLocalTransferRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/send': typeof AuthenticatedSendRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
   '/_authenticated/transfer': typeof AuthenticatedTransferRoute
@@ -95,6 +124,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/accounts'
     | '/dashboard'
+    | '/international-transfer'
+    | '/local-transfer'
+    | '/profile'
     | '/send'
     | '/transactions'
     | '/transfer'
@@ -104,6 +136,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/accounts'
     | '/dashboard'
+    | '/international-transfer'
+    | '/local-transfer'
+    | '/profile'
     | '/send'
     | '/transactions'
     | '/transfer'
@@ -114,6 +149,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/accounts'
     | '/_authenticated/dashboard'
+    | '/_authenticated/international-transfer'
+    | '/_authenticated/local-transfer'
+    | '/_authenticated/profile'
     | '/_authenticated/send'
     | '/_authenticated/transactions'
     | '/_authenticated/transfer'
@@ -169,6 +207,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSendRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/local-transfer': {
+      id: '/_authenticated/local-transfer'
+      path: '/local-transfer'
+      fullPath: '/local-transfer'
+      preLoaderRoute: typeof AuthenticatedLocalTransferRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/international-transfer': {
+      id: '/_authenticated/international-transfer'
+      path: '/international-transfer'
+      fullPath: '/international-transfer'
+      preLoaderRoute: typeof AuthenticatedInternationalTransferRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -189,6 +248,9 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountsRoute: typeof AuthenticatedAccountsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedInternationalTransferRoute: typeof AuthenticatedInternationalTransferRoute
+  AuthenticatedLocalTransferRoute: typeof AuthenticatedLocalTransferRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSendRoute: typeof AuthenticatedSendRoute
   AuthenticatedTransactionsRoute: typeof AuthenticatedTransactionsRoute
   AuthenticatedTransferRoute: typeof AuthenticatedTransferRoute
@@ -197,6 +259,10 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountsRoute: AuthenticatedAccountsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedInternationalTransferRoute:
+    AuthenticatedInternationalTransferRoute,
+  AuthenticatedLocalTransferRoute: AuthenticatedLocalTransferRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSendRoute: AuthenticatedSendRoute,
   AuthenticatedTransactionsRoute: AuthenticatedTransactionsRoute,
   AuthenticatedTransferRoute: AuthenticatedTransferRoute,

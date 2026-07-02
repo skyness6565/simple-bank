@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { listAccounts, sendToEmail, type Transaction } from "@/lib/banking.functions";
+import { listAccounts, localTransfer, type Transaction } from "@/lib/banking.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,36 +11,46 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ReceiptDialog } from "@/components/receipt-dialog";
 import { formatCurrency, formatAccountNumber } from "@/lib/banking-format";
 import { toast } from "sonner";
+import { Landmark } from "lucide-react";
 
 const accountsQO = queryOptions({ queryKey: ["accounts"], queryFn: () => listAccounts() });
 
-export const Route = createFileRoute("/_authenticated/send")({
+export const Route = createFileRoute("/_authenticated/local-transfer")({
   loader: ({ context }) => context.queryClient.ensureQueryData(accountsQO),
-  component: SendPage,
+  component: LocalTransferPage,
 });
 
-function SendPage() {
+function LocalTransferPage() {
   const { data: accounts } = useSuspenseQuery(accountsQO);
   const queryClient = useQueryClient();
-  const sendFn = useServerFn(sendToEmail);
+  const fn = useServerFn(localTransfer);
 
   const [from, setFrom] = useState(accounts[0]?.id ?? "");
-  const [email, setEmail] = useState("");
+  const [recipientName, setRecipientName] = useState("");
+  const [recipientBank, setRecipientBank] = useState("");
+  const [recipientAccount, setRecipientAccount] = useState("");
+  const [routingNumber, setRoutingNumber] = useState("");
   const [amount, setAmount] = useState("");
   const [desc, setDesc] = useState("");
   const [receipt, setReceipt] = useState<Transaction | null>(null);
 
   const mut = useMutation({
-    mutationFn: (p: { fromAccountId: string; recipientEmail: string; amount: number; description?: string }) =>
-      sendFn({ data: p }),
+    mutationFn: (p: {
+      fromAccountId: string;
+      amount: number;
+      recipientName: string;
+      recipientBank: string;
+      recipientAccount: string;
+      routingNumber: string;
+      description?: string;
+    }) => fn({ data: p }),
     onSuccess: (res) => {
-      toast.success(`Sent to ${res.recipientName}`);
+      toast.success("Local transfer submitted");
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       setReceipt(res.transaction);
       setAmount("");
       setDesc("");
-      setEmail("");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -50,21 +60,33 @@ function SendPage() {
     const amt = Number(amount);
     if (!from) return toast.error("Choose an account");
     if (!(amt > 0)) return toast.error("Enter an amount");
-    mut.mutate({ fromAccountId: from, recipientEmail: email.trim(), amount: amt, description: desc.trim() || undefined });
+    mut.mutate({
+      fromAccountId: from,
+      amount: amt,
+      recipientName: recipientName.trim(),
+      recipientBank: recipientBank.trim(),
+      recipientAccount: recipientAccount.trim(),
+      routingNumber: routingNumber.trim(),
+      description: desc.trim() || undefined,
+    });
   }
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Send money</h1>
-        <p className="text-sm text-muted-foreground">
-          Send to another Northline customer using their email address.
-        </p>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+          <Landmark className="h-5 w-5" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Local transfer</h1>
+          <p className="text-sm text-muted-foreground">Send money to any domestic bank account.</p>
+        </div>
       </div>
+
       <Card className="p-6">
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>From</Label>
+        <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-2 md:col-span-2">
+            <Label>From account</Label>
             <Select value={from} onValueChange={setFrom}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -77,8 +99,20 @@ function SendPage() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="rcp">Recipient email</Label>
-            <Input id="rcp" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Label htmlFor="rn">Recipient name</Label>
+            <Input id="rn" required value={recipientName} onChange={(e) => setRecipientName(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="rb">Bank name</Label>
+            <Input id="rb" required value={recipientBank} onChange={(e) => setRecipientBank(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ra">Account number</Label>
+            <Input id="ra" required value={recipientAccount} onChange={(e) => setRecipientAccount(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="rr">Routing number (ABA)</Label>
+            <Input id="rr" required value={routingNumber} onChange={(e) => setRoutingNumber(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="amt">Amount (USD)</Label>
@@ -88,16 +122,17 @@ function SendPage() {
             <Label htmlFor="desc">Note (optional)</Label>
             <Input id="desc" value={desc} onChange={(e) => setDesc(e.target.value)} maxLength={140} />
           </div>
-          <Button type="submit" className="w-full" disabled={mut.isPending}>
-            {mut.isPending ? "Sending…" : "Send"}
+          <Button type="submit" className="w-full md:col-span-2" disabled={mut.isPending}>
+            {mut.isPending ? "Sending…" : "Send local transfer"}
           </Button>
         </form>
       </Card>
+
       <ReceiptDialog
         transaction={receipt}
         open={receipt !== null}
         onOpenChange={(v) => !v && setReceipt(null)}
-        title="Send money receipt"
+        title="Local transfer receipt"
       />
     </div>
   );
