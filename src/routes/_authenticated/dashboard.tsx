@@ -65,7 +65,12 @@ function Dashboard() {
               Across {accounts.length} {accounts.length === 1 ? "account" : "accounts"}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <Link to="/transfer">
+              <Link to="/send">
+                <Button size="sm" variant="secondary" className="gap-2">
+                  <Send className="h-4 w-4" /> Send
+                </Button>
+              </Link>
+              <Link to="/local-transfer">
                 <Button size="sm" variant="secondary" className="gap-2">
                   <ArrowLeftRight className="h-4 w-4" /> Transfer
                 </Button>
