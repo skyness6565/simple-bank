@@ -7,7 +7,6 @@ import {
   LogOut,
   LayoutDashboard,
   Wallet,
-  ArrowLeftRight,
   Send,
   Receipt,
   Globe2,
