@@ -38,6 +38,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     staleTime: 60_000,
   });
   const items = isAdmin ? [...nav, { to: "/admin", label: "Admin", icon: Shield } as const] : nav;
+
+  async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
