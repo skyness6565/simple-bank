@@ -1,13 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { listAccounts, transferBetweenOwn } from "@/lib/banking.functions";
+import { listAccounts, transferBetweenOwn, type Transaction } from "@/lib/banking.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ReceiptDialog } from "@/components/receipt-dialog";
 import { formatCurrency, formatAccountNumber } from "@/lib/banking-format";
 import { toast } from "sonner";
 
@@ -20,7 +21,6 @@ export const Route = createFileRoute("/_authenticated/transfer")({
 
 function TransferPage() {
   const { data: accounts } = useSuspenseQuery(accountsQO);
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const transferFn = useServerFn(transferBetweenOwn);
 
@@ -28,15 +28,18 @@ function TransferPage() {
   const [to, setTo] = useState(accounts[1]?.id ?? "");
   const [amount, setAmount] = useState("");
   const [desc, setDesc] = useState("");
+  const [receipt, setReceipt] = useState<Transaction | null>(null);
 
   const mut = useMutation({
     mutationFn: (payload: { fromAccountId: string; toAccountId: string; amount: number; description?: string }) =>
       transferFn({ data: payload }),
-    onSuccess: () => {
+    onSuccess: (res) => {
       toast.success("Transfer complete");
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      navigate({ to: "/dashboard" });
+      setReceipt(res.transaction);
+      setAmount("");
+      setDesc("");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -105,6 +108,12 @@ function TransferPage() {
           </form>
         )}
       </Card>
+      <ReceiptDialog
+        transaction={receipt}
+        open={receipt !== null}
+        onOpenChange={(v) => !v && setReceipt(null)}
+        title="Transfer receipt"
+      />
     </div>
   );
 }
