@@ -230,8 +230,10 @@ function AdjustDialog({
         },
       });
     },
-    onSuccess: () => {
-      toast.success("Balance adjusted");
+    onSuccess: (res) => {
+      toast.success(
+        `${mode === "credit" ? "Credited" : "Debited"} ${formatCurrency(Number(amount))} — ref ${res.reference}`,
+      );
       qc.invalidateQueries({ queryKey: ["admin", "accounts"] });
       qc.invalidateQueries({ queryKey: ["admin", "tx"] });
       setAmount("");
@@ -239,8 +241,11 @@ function AdjustDialog({
       setBackdate("");
       onOpenChange(false);
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(`Adjustment failed: ${(e as Error).message}`),
   });
+
+  const parsedAmount = Number(amount);
+  const canSubmit = Number.isFinite(parsedAmount) && parsedAmount > 0 && !!account;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
