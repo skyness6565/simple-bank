@@ -447,9 +447,27 @@ function TransactionsDialog({
                         onChange={(e) => setNewDate(e.target.value)}
                       />
                     </div>
-                    <Button size="sm" onClick={() => m.mutate()} disabled={m.isPending}>
-                      Save
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" disabled={m.isPending || !newDate}>
+                          Save
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Change transaction date?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Set the date of "{t.description ?? t.type}" ({formatCurrency(t.amount)}) from{" "}
+                            {formatDate(t.created_at)} to{" "}
+                            {newDate ? new Date(newDate).toLocaleString() : "—"}.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => m.mutate()}>Confirm</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <Button
                       size="sm"
                       variant="outline"
