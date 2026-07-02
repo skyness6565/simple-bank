@@ -88,6 +88,9 @@ function SignInForm() {
 function SignUpForm({ onDone }: { onDone: () => void }) {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -95,13 +98,23 @@ function SignUpForm({ onDone }: { onDone: () => void }) {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (password.length < 8) return toast.error("Password must be at least 8 characters");
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      return toast.error("Username must be 3–20 letters, numbers or underscores");
+    }
+    if (!country.trim()) return toast.error("Country is required");
+    if (address.trim().length < 5) return toast.error("Please enter your house address");
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: fullName },
+        data: {
+          full_name: fullName.trim(),
+          username: username.trim(),
+          country: country.trim(),
+          address: address.trim(),
+        },
       },
     });
     setLoading(false);
@@ -119,7 +132,41 @@ function SignUpForm({ onDone }: { onDone: () => void }) {
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="su-name">Full name</Label>
-        <Input id="su-name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+        <Input id="su-name" required maxLength={80} value={fullName} onChange={(e) => setFullName(e.target.value)} />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="su-username">Username</Label>
+        <Input
+          id="su-username"
+          required
+          maxLength={20}
+          placeholder="e.g. alex_92"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <p className="text-xs text-muted-foreground">3–20 letters, numbers or underscores.</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="su-country">Country</Label>
+        <Input
+          id="su-country"
+          required
+          maxLength={60}
+          placeholder="e.g. United States"
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="su-address">House address</Label>
+        <Input
+          id="su-address"
+          required
+          maxLength={200}
+          placeholder="Street, city, postal code"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="su-email">Email</Label>
