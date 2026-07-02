@@ -87,9 +87,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-title", content: "Northline" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { property: "og:title", content: "Northline Bank — Simple Online Banking" },
-      { property: "og:description", content: "A simple, secure online banking experience." },
+      { property: "og:description", content: "A simple, secure online banking experience. Check balances, transfer money, and send funds instantly." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Northline Bank — Simple Online Banking" },
+      { name: "twitter:description", content: "A simple, secure online banking experience. Check balances, transfer money, and send funds instantly." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e283ed80-c8b9-4d84-bfdb-fff79b06983a/id-preview-60682db1--12c43858-a021-4153-9a47-0fb509d6a903.lovable.app-1783010563368.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e283ed80-c8b9-4d84-bfdb-fff79b06983a/id-preview-60682db1--12c43858-a021-4153-9a47-0fb509d6a903.lovable.app-1783010563368.png" },
     ],
     links: [
       {
