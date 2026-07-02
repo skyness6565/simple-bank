@@ -2,14 +2,28 @@ import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Wallet, ArrowLeftRight, Send, Receipt } from "lucide-react";
+import {
+  LogOut,
+  LayoutDashboard,
+  Wallet,
+  ArrowLeftRight,
+  Send,
+  Receipt,
+  Globe2,
+  Landmark,
+  User,
+  Building2,
+} from "lucide-react";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/accounts", label: "Accounts", icon: Wallet },
-  { to: "/transactions", label: "Transactions", icon: Receipt },
   { to: "/transfer", label: "Transfer", icon: ArrowLeftRight },
   { to: "/send", label: "Send", icon: Send },
+  { to: "/local-transfer", label: "Local", icon: Landmark },
+  { to: "/international-transfer", label: "International", icon: Globe2 },
+  { to: "/transactions", label: "History", icon: Receipt },
+  { to: "/profile", label: "Profile", icon: User },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -27,13 +41,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
+      <header className="border-b border-border bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-md bg-primary" />
+            <div className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground">
+              <Building2 className="h-4 w-4" />
+            </div>
             <span className="text-lg font-semibold tracking-tight">Northline Bank</span>
           </Link>
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 lg:flex">
             {nav.map((n) => (
               <Link
                 key={n.to}
@@ -50,7 +66,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             Sign out
           </Button>
         </div>
-        <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-3 md:hidden">
+        <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-3 lg:hidden">
           {nav.map((n) => (
             <Link
               key={n.to}
