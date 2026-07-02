@@ -14,13 +14,122 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accounts: {
+        Row: {
+          account_number: string
+          balance: number
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          account_number: string
+          balance?: number
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          account_number?: string
+          balance?: number
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          account_id: string
+          amount: number
+          counterparty_account_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          type: string
+        }
+        Insert: {
+          account_id: string
+          amount: number
+          counterparty_account_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          type: string
+        }
+        Update: {
+          account_id?: string
+          amount?: number
+          counterparty_account_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_counterparty_account_id_fkey"
+            columns: ["counterparty_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      find_primary_account_by_email: {
+        Args: { _email: string }
+        Returns: {
+          account_id: string
+          full_name: string
+          user_id: string
+        }[]
+      }
+      generate_account_number: { Args: never; Returns: string }
+      perform_transfer: {
+        Args: {
+          _amount: number
+          _description: string
+          _from_account: string
+          _to_account: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
