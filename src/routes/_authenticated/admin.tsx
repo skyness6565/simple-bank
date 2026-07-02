@@ -314,9 +314,32 @@ function AdjustDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={() => m.mutate()} disabled={m.isPending}>
-            {m.isPending ? "Saving..." : "Apply"}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button disabled={m.isPending || !canSubmit}>
+                {m.isPending ? "Saving..." : "Apply"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Confirm {mode === "credit" ? "credit" : "debit"} of {formatCurrency(parsedAmount || 0)}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {account
+                    ? `${mode === "credit" ? "Add" : "Subtract"} ${formatCurrency(parsedAmount || 0)} ${
+                        mode === "credit" ? "to" : "from"
+                      } ${account.email} (${account.account_number}). Current balance: ${formatCurrency(account.balance)}.`
+                    : ""}
+                  {backdate ? ` This transaction will be dated ${new Date(backdate).toLocaleString()}.` : ""}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => m.mutate()}>Confirm</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </DialogFooter>
       </DialogContent>
     </Dialog>
