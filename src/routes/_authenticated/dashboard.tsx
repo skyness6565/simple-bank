@@ -15,7 +15,7 @@ import {
   ArrowUpRight,
   Landmark,
   Globe2,
-  Plus,
+  
   TrendingUp,
   Wallet,
   Sparkles,
