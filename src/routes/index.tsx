@@ -307,7 +307,25 @@ function Landing() {
               <span className="font-semibold">Northline Bank</span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">Simple, modern banking for everyone.</p>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li>
+                <a href="mailto:dj263791@gmail.com" className="text-muted-foreground hover:text-foreground">
+                  ✉️ dj263791@gmail.com
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/12024605762"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  💬 WhatsApp: +1 (202) 460-5762
+                </a>
+              </li>
+            </ul>
           </div>
+
           {[
             { h: "Product", items: ["Dashboard", "Transfers", "Send money", "Accounts"] },
             { h: "Company", items: ["About", "Careers", "Press", "Contact"] },
