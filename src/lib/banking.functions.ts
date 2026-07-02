@@ -255,8 +255,8 @@ export const internationalTransfer = createServerFn({ method: "POST" })
       _recipient_account: data.recipientAccount,
       _recipient_swift: data.swiftCode,
       _recipient_country: data.country,
-      _recipient_routing: null,
-      _description: data.description ?? null,
+      _recipient_routing: "",
+      _description: data.description ?? "",
     });
     if (error) throw new Error(error.message);
     const { data: tx } = await context.supabase
