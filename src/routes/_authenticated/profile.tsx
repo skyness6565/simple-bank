@@ -42,6 +42,45 @@ function ProfilePage() {
         </div>
       </div>
 
+      <section className="rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent p-6">
+        <h2 className="mb-4 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+          <CreditCard className="h-4 w-4" /> Account & Cards
+        </h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Checking account number</p>
+            {accounts
+              .filter((a) => a.name.toLowerCase().includes("checking"))
+              .concat(accounts.filter((a) => !a.name.toLowerCase().includes("checking")))
+              .slice(0, 3)
+              .map((a) => (
+                <div key={a.id} className="mt-2 flex items-center justify-between gap-3 border-b border-border/60 py-2 last:border-b-0">
+                  <div>
+                    <p className="text-sm font-medium">{a.name}</p>
+                    <p className="font-mono text-sm">{formatFullAccountNumber(a.account_number)}</p>
+                  </div>
+                  <p className="text-sm font-semibold">{formatCurrency(a.balance)}</p>
+                </div>
+              ))}
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">ATM card (last 4)</p>
+            {cards.length === 0 && <p className="mt-2 text-sm text-muted-foreground">No cards yet.</p>}
+            {cards.map((c) => (
+              <div key={c.id} className="mt-2 flex items-center justify-between gap-3 border-b border-border/60 py-2 last:border-b-0">
+                <div>
+                  <p className="text-sm font-medium">{c.brand}</p>
+                  <p className="font-mono text-sm">•••• {c.card_number.slice(-4)}</p>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Exp {String(c.expiry_month).padStart(2, "0")}/{String(c.expiry_year).slice(-2)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="grid gap-4 md:grid-cols-2">
         <Card className="p-6">
           <h2 className="mb-4 text-sm font-medium text-muted-foreground">Personal details</h2>
@@ -56,7 +95,7 @@ function ProfilePage() {
         </Card>
 
         <Card className="p-6">
-          <h2 className="mb-4 text-sm font-medium text-muted-foreground">Accounts</h2>
+          <h2 className="mb-4 text-sm font-medium text-muted-foreground">All accounts</h2>
           {accounts.length === 0 ? (
             <p className="text-sm text-muted-foreground">No accounts yet.</p>
           ) : (
