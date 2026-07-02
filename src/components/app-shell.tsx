@@ -58,7 +58,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="text-lg font-semibold tracking-tight">Northline Bank</span>
           </Link>
           <nav className="hidden items-center gap-1 lg:flex">
-            {nav.map((n) => (
+            {items.map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
