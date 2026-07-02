@@ -221,10 +221,10 @@ export const localTransfer = createServerFn({ method: "POST" })
       _recipient_name: data.recipientName,
       _recipient_bank: data.recipientBank,
       _recipient_account: data.recipientAccount,
-      _recipient_swift: null,
-      _recipient_country: null,
+      _recipient_swift: "",
+      _recipient_country: "",
       _recipient_routing: data.routingNumber,
-      _description: data.description ?? null,
+      _description: data.description ?? "",
     });
     if (error) throw new Error(error.message);
     const { data: tx } = await context.supabase
