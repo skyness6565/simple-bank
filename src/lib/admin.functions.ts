@@ -139,7 +139,7 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       _account_id: data.accountId,
       _delta: data.delta,
       _description: data.description ?? "Admin adjustment",
-      _backdated_at: data.backdatedAt ?? null,
+      _backdated_at: data.backdatedAt ?? new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
     return { ok: true, reference: ref as string };
