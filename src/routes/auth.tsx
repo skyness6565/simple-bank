@@ -11,6 +11,7 @@ import { toast } from "sonner";
 const searchSchema = z.object({ mode: z.enum(["signin", "signup"]).optional() });
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   validateSearch: searchSchema,
   component: AuthPage,
 });
