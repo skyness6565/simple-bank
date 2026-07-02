@@ -32,8 +32,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const router = useRouter();
-
-  async function handleSignOut() {
+  const { data: isAdmin } = useQuery({
+    queryKey: ["admin", "check"],
+    queryFn: () => isCurrentUserAdmin(),
+    staleTime: 60_000,
+  });
+  const items = isAdmin ? [...nav, { to: "/admin", label: "Admin", icon: Shield } as const] : nav;
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
