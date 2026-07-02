@@ -1,7 +1,8 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { isCurrentUserAdmin } from "@/lib/admin.functions";
 import {
   LogOut,
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
   Landmark,
   User,
   Building2,
+  Shield,
 } from "lucide-react";
 
 const nav = [
