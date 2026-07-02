@@ -160,29 +160,41 @@ function BlockToggle({ account }: { account: AdminAccount }) {
   const setBlocked = useServerFn(adminSetBlocked);
   const m = useMutation({
     mutationFn: (blocked: boolean) => setBlocked({ data: { accountId: account.id, blocked } }),
-    onSuccess: () => {
-      toast.success(account.is_blocked ? "Account unblocked" : "Account blocked");
+    onSuccess: (_res, blocked) => {
+      toast.success(blocked ? `Account ${account.account_number} blocked` : `Account ${account.account_number} unblocked`);
       qc.invalidateQueries({ queryKey: ["admin", "accounts"] });
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(`Failed to update account: ${(e as Error).message}`),
   });
+  const willBlock = !account.is_blocked;
   return (
-    <Button
-      size="sm"
-      variant={account.is_blocked ? "outline" : "destructive"}
-      disabled={m.isPending}
-      onClick={() => m.mutate(!account.is_blocked)}
-    >
-      {account.is_blocked ? (
-        <>
-          <Unlock className="mr-1 h-3.5 w-3.5" /> Unblock
-        </>
-      ) : (
-        <>
-          <Lock className="mr-1 h-3.5 w-3.5" /> Block
-        </>
-      )}
-    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="sm" variant={account.is_blocked ? "outline" : "destructive"} disabled={m.isPending}>
+          {account.is_blocked ? (
+            <><Unlock className="mr-1 h-3.5 w-3.5" /> Unblock</>
+          ) : (
+            <><Lock className="mr-1 h-3.5 w-3.5" /> Block</>
+          )}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{willBlock ? "Block this account?" : "Unblock this account?"}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {willBlock
+              ? `${account.email} will not be able to send or receive transfers on account ${account.account_number}.`
+              : `${account.email} will be able to send and receive transfers again on account ${account.account_number}.`}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={() => m.mutate(willBlock)}>
+            {willBlock ? "Block account" : "Unblock account"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
