@@ -10,7 +10,6 @@ import {
   formatDate,
 } from "@/lib/banking-format";
 import {
-  ArrowLeftRight,
   Send,
   ArrowDownRight,
   ArrowUpRight,
