@@ -1,7 +1,8 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { isCurrentUserAdmin } from "@/lib/admin.functions";
 import {
   LogOut,
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
   Landmark,
   User,
   Building2,
+  Shield,
 } from "lucide-react";
 
 const nav = [
@@ -30,6 +32,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { data: isAdmin } = useQuery({
+    queryKey: ["admin", "check"],
+    queryFn: () => isCurrentUserAdmin(),
+    staleTime: 60_000,
+  });
+  const items = isAdmin ? [...nav, { to: "/admin", label: "Admin", icon: Shield } as const] : nav;
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
@@ -50,7 +58,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="text-lg font-semibold tracking-tight">Northline Bank</span>
           </Link>
           <nav className="hidden items-center gap-1 lg:flex">
-            {nav.map((n) => (
+            {items.map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
@@ -67,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Button>
         </div>
         <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-3 lg:hidden">
-          {nav.map((n) => (
+          {items.map((n) => (
             <Link
               key={n.to}
               to={n.to}

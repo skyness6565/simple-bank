@@ -20,6 +20,7 @@ export type Database = {
           balance: number
           created_at: string
           id: string
+          is_blocked: boolean
           name: string
           user_id: string
         }
@@ -28,6 +29,7 @@ export type Database = {
           balance?: number
           created_at?: string
           id?: string
+          is_blocked?: boolean
           name: string
           user_id: string
         }
@@ -36,6 +38,7 @@ export type Database = {
           balance?: number
           created_at?: string
           id?: string
+          is_blocked?: boolean
           name?: string
           user_id?: string
         }
@@ -176,11 +179,49 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_balance: {
+        Args: {
+          _account_id: string
+          _backdated_at: string
+          _delta: number
+          _description: string
+        }
+        Returns: string
+      }
+      admin_set_account_blocked: {
+        Args: { _account_id: string; _blocked: boolean }
+        Returns: undefined
+      }
+      admin_update_transaction_date: {
+        Args: { _new_date: string; _tx_id: string }
+        Returns: undefined
+      }
       find_primary_account_by_email: {
         Args: { _email: string }
         Returns: {
@@ -192,6 +233,13 @@ export type Database = {
       generate_account_number: { Args: never; Returns: string }
       generate_card_number: { Args: never; Returns: string }
       generate_reference: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       perform_external_transfer: {
         Args: {
           _amount: number
@@ -218,7 +266,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -345,6 +393,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
