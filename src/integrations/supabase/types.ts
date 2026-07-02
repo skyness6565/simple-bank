@@ -41,6 +41,42 @@ export type Database = {
         }
         Relationships: []
       }
+      cards: {
+        Row: {
+          brand: string
+          card_number: string
+          cardholder_name: string
+          created_at: string
+          cvc: string
+          expiry_month: number
+          expiry_year: number
+          id: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string
+          card_number: string
+          cardholder_name: string
+          created_at?: string
+          cvc: string
+          expiry_month: number
+          expiry_year: number
+          id?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string
+          card_number?: string
+          cardholder_name?: string
+          created_at?: string
+          cvc?: string
+          expiry_month?: number
+          expiry_year?: number
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -75,28 +111,52 @@ export type Database = {
         Row: {
           account_id: string
           amount: number
+          category: string
           counterparty_account_id: string | null
           created_at: string
           description: string | null
           id: string
+          recipient_account: string | null
+          recipient_bank: string | null
+          recipient_country: string | null
+          recipient_name: string | null
+          recipient_routing: string | null
+          recipient_swift: string | null
+          reference: string | null
           type: string
         }
         Insert: {
           account_id: string
           amount: number
+          category?: string
           counterparty_account_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          recipient_account?: string | null
+          recipient_bank?: string | null
+          recipient_country?: string | null
+          recipient_name?: string | null
+          recipient_routing?: string | null
+          recipient_swift?: string | null
+          reference?: string | null
           type: string
         }
         Update: {
           account_id?: string
           amount?: number
+          category?: string
           counterparty_account_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          recipient_account?: string | null
+          recipient_bank?: string | null
+          recipient_country?: string | null
+          recipient_name?: string | null
+          recipient_routing?: string | null
+          recipient_swift?: string | null
+          reference?: string | null
           type?: string
         }
         Relationships: [
@@ -130,6 +190,23 @@ export type Database = {
         }[]
       }
       generate_account_number: { Args: never; Returns: string }
+      generate_card_number: { Args: never; Returns: string }
+      generate_reference: { Args: never; Returns: string }
+      perform_external_transfer: {
+        Args: {
+          _amount: number
+          _category: string
+          _description: string
+          _from_account: string
+          _recipient_account: string
+          _recipient_bank: string
+          _recipient_country: string
+          _recipient_name: string
+          _recipient_routing: string
+          _recipient_swift: string
+        }
+        Returns: string
+      }
       perform_transfer: {
         Args: {
           _amount: number
