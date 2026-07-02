@@ -373,12 +373,12 @@ function TransactionsDialog({
       });
     },
     onSuccess: () => {
-      toast.success("Transaction date updated");
+      toast.success(`Transaction date updated to ${new Date(newDate).toLocaleString()}`);
       qc.invalidateQueries({ queryKey: ["admin", "tx"] });
       setEditingId(null);
       setNewDate("");
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(`Could not update date: ${(e as Error).message}`),
   });
 
   return (
