@@ -134,7 +134,7 @@ function Dashboard() {
             ))}
             <Link to="/accounts">
               <Button variant="outline" className="w-full gap-2">
-                <Plus className="h-4 w-4" /> Open a new account
+                <Wallet className="h-4 w-4" /> View accounts
               </Button>
             </Link>
           </div>
