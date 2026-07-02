@@ -25,6 +25,17 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Shield, Lock, Unlock, Pencil, Plus, Minus, Calendar } from "lucide-react";
 
@@ -149,29 +160,41 @@ function BlockToggle({ account }: { account: AdminAccount }) {
   const setBlocked = useServerFn(adminSetBlocked);
   const m = useMutation({
     mutationFn: (blocked: boolean) => setBlocked({ data: { accountId: account.id, blocked } }),
-    onSuccess: () => {
-      toast.success(account.is_blocked ? "Account unblocked" : "Account blocked");
+    onSuccess: (_res, blocked) => {
+      toast.success(blocked ? `Account ${account.account_number} blocked` : `Account ${account.account_number} unblocked`);
       qc.invalidateQueries({ queryKey: ["admin", "accounts"] });
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(`Failed to update account: ${(e as Error).message}`),
   });
+  const willBlock = !account.is_blocked;
   return (
-    <Button
-      size="sm"
-      variant={account.is_blocked ? "outline" : "destructive"}
-      disabled={m.isPending}
-      onClick={() => m.mutate(!account.is_blocked)}
-    >
-      {account.is_blocked ? (
-        <>
-          <Unlock className="mr-1 h-3.5 w-3.5" /> Unblock
-        </>
-      ) : (
-        <>
-          <Lock className="mr-1 h-3.5 w-3.5" /> Block
-        </>
-      )}
-    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="sm" variant={account.is_blocked ? "outline" : "destructive"} disabled={m.isPending}>
+          {account.is_blocked ? (
+            <><Unlock className="mr-1 h-3.5 w-3.5" /> Unblock</>
+          ) : (
+            <><Lock className="mr-1 h-3.5 w-3.5" /> Block</>
+          )}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{willBlock ? "Block this account?" : "Unblock this account?"}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {willBlock
+              ? `${account.email} will not be able to send or receive transfers on account ${account.account_number}.`
+              : `${account.email} will be able to send and receive transfers again on account ${account.account_number}.`}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={() => m.mutate(willBlock)}>
+            {willBlock ? "Block account" : "Unblock account"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -207,8 +230,10 @@ function AdjustDialog({
         },
       });
     },
-    onSuccess: () => {
-      toast.success("Balance adjusted");
+    onSuccess: (res) => {
+      toast.success(
+        `${mode === "credit" ? "Credited" : "Debited"} ${formatCurrency(Number(amount))} — ref ${res.reference}`,
+      );
       qc.invalidateQueries({ queryKey: ["admin", "accounts"] });
       qc.invalidateQueries({ queryKey: ["admin", "tx"] });
       setAmount("");
@@ -216,8 +241,11 @@ function AdjustDialog({
       setBackdate("");
       onOpenChange(false);
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(`Adjustment failed: ${(e as Error).message}`),
   });
+
+  const parsedAmount = Number(amount);
+  const canSubmit = Number.isFinite(parsedAmount) && parsedAmount > 0 && !!account;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -286,9 +314,32 @@ function AdjustDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={() => m.mutate()} disabled={m.isPending}>
-            {m.isPending ? "Saving..." : "Apply"}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button disabled={m.isPending || !canSubmit}>
+                {m.isPending ? "Saving..." : "Apply"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Confirm {mode === "credit" ? "credit" : "debit"} of {formatCurrency(parsedAmount || 0)}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {account
+                    ? `${mode === "credit" ? "Add" : "Subtract"} ${formatCurrency(parsedAmount || 0)} ${
+                        mode === "credit" ? "to" : "from"
+                      } ${account.email} (${account.account_number}). Current balance: ${formatCurrency(account.balance)}.`
+                    : ""}
+                  {backdate ? ` This transaction will be dated ${new Date(backdate).toLocaleString()}.` : ""}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => m.mutate()}>Confirm</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -322,12 +373,12 @@ function TransactionsDialog({
       });
     },
     onSuccess: () => {
-      toast.success("Transaction date updated");
+      toast.success(`Transaction date updated to ${new Date(newDate).toLocaleString()}`);
       qc.invalidateQueries({ queryKey: ["admin", "tx"] });
       setEditingId(null);
       setNewDate("");
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(`Could not update date: ${(e as Error).message}`),
   });
 
   return (
@@ -396,9 +447,27 @@ function TransactionsDialog({
                         onChange={(e) => setNewDate(e.target.value)}
                       />
                     </div>
-                    <Button size="sm" onClick={() => m.mutate()} disabled={m.isPending}>
-                      Save
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" disabled={m.isPending || !newDate}>
+                          Save
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Change transaction date?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Set the date of "{t.description ?? t.type}" ({formatCurrency(t.amount)}) from{" "}
+                            {formatDate(t.created_at)} to{" "}
+                            {newDate ? new Date(newDate).toLocaleString() : "—"}.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => m.mutate()}>Confirm</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <Button
                       size="sm"
                       variant="outline"

@@ -7,7 +7,6 @@ import {
   LogOut,
   LayoutDashboard,
   Wallet,
-  ArrowLeftRight,
   Send,
   Receipt,
   Globe2,
@@ -20,7 +19,6 @@ import {
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/accounts", label: "Accounts", icon: Wallet },
-  { to: "/transfer", label: "Transfer", icon: ArrowLeftRight },
   { to: "/send", label: "Send", icon: Send },
   { to: "/local-transfer", label: "Local", icon: Landmark },
   { to: "/international-transfer", label: "International", icon: Globe2 },

@@ -10,13 +10,12 @@ import {
   formatDate,
 } from "@/lib/banking-format";
 import {
-  ArrowLeftRight,
   Send,
   ArrowDownRight,
   ArrowUpRight,
   Landmark,
   Globe2,
-  Plus,
+  
   TrendingUp,
   Wallet,
   Sparkles,
@@ -65,11 +64,6 @@ function Dashboard() {
               Across {accounts.length} {accounts.length === 1 ? "account" : "accounts"}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <Link to="/transfer">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  <ArrowLeftRight className="h-4 w-4" /> Transfer
-                </Button>
-              </Link>
               <Link to="/send">
                 <Button size="sm" variant="secondary" className="gap-2">
                   <Send className="h-4 w-4" /> Send
@@ -77,7 +71,7 @@ function Dashboard() {
               </Link>
               <Link to="/local-transfer">
                 <Button size="sm" variant="secondary" className="gap-2">
-                  <Landmark className="h-4 w-4" /> Local
+                  <Landmark className="h-4 w-4" /> Local transfer
                 </Button>
               </Link>
               <Link to="/international-transfer">
@@ -140,7 +134,7 @@ function Dashboard() {
             ))}
             <Link to="/accounts">
               <Button variant="outline" className="w-full gap-2">
-                <Plus className="h-4 w-4" /> Open a new account
+                <Wallet className="h-4 w-4" /> View accounts
               </Button>
             </Link>
           </div>
