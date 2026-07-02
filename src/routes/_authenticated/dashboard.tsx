@@ -72,17 +72,7 @@ function Dashboard() {
               </Link>
               <Link to="/local-transfer">
                 <Button size="sm" variant="secondary" className="gap-2">
-                  <ArrowLeftRight className="h-4 w-4" /> Transfer
-                </Button>
-              </Link>
-              <Link to="/send">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  <Send className="h-4 w-4" /> Send
-                </Button>
-              </Link>
-              <Link to="/local-transfer">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  <Landmark className="h-4 w-4" /> Local
+                  <Landmark className="h-4 w-4" /> Local transfer
                 </Button>
               </Link>
               <Link to="/international-transfer">
