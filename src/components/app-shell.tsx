@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Button>
         </div>
         <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-3 lg:hidden">
-          {nav.map((n) => (
+          {items.map((n) => (
             <Link
               key={n.to}
               to={n.to}
