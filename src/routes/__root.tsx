@@ -104,7 +104,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/icon-512.png" },
       { rel: "manifest", href: "/manifest.webmanifest" },
     ],
-
+    scripts: [
+      { src: "//code.jivosite.com/widget/8dA2EK8T5F", async: true },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
